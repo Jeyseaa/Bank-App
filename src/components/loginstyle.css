@@ -1,0 +1,395 @@
+@import url("https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap");
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --color-1: #ee7344; /* Footer Twitter link */
+  --color-2: #74959a; /* Social login area background color */
+  --color-3: #ffc85c; /* Social login buttons */
+  --color-4: #ea5455; /* Login with email button */
+}
+
+body {
+  font-family: Montserrat, sans-serif;
+  height: 100vh;
+  font-size: 17px;
+}
+
+.wrapper {
+  max-width: 960px;
+  min-width: 220px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+main {
+  padding: 10px 20px;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  position: relative;
+}
+
+footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  background-color: #232323;
+  color: white;
+  text-align: center;
+  padding: 6px;
+}
+
+footer a {
+  color: var(--color-1);
+  text-decoration: none;
+}
+
+section {
+  margin-top: 20px;
+  margin-bottom: 160px;
+}
+
+.face {
+  text-align: center;
+  position: relative;
+}
+
+.eye-cover1 {
+  position: absolute;
+  width: 30px;
+  height: 12px;
+  top: 40%;
+  left: 46%;
+  border-radius: 30%;
+}
+
+.eye-cover2 {
+  position: absolute;
+  width: 26px;
+  height: 13px;
+  top: 40%;
+  left: 52%;
+  border-radius: 30%;
+}
+
+#eyes1 {
+  width: 10px;
+  height: 10px;
+  background-color: #fff;
+  position: absolute;
+  border-radius: 50%;
+  border: 4px solid #333;
+  overflow: hidden;
+  top: -275%;
+  left: 65%;
+}
+
+#eyes2 {
+  width: 10px;
+  height: 10px;
+  background-color: #fff;
+  position: absolute;
+  border-radius: 50%;
+  border: 4px solid #333;
+  overflow: hidden;
+  top: -248%;
+  left: -30%;
+}
+
+.login-container {
+  display: flex;
+  border-radius: 3px;
+  box-shadow: 6px 0 15px rgba(0, 0, 0, 0.4);
+}
+
+.social-login {
+  background-color: var(--color-2);
+  color: #fff;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  gap: 30px;
+  flex: 1;
+  border-top-left-radius: 3px;
+  border-bottom-left-radius: 3px;
+}
+
+.social-login a {
+  text-decoration: none;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  font-size: 32px;
+  font-weight: bold;
+  font-family: "Unbounded", cursive;
+}
+
+.logo p {
+  margin-top: 21px;
+}
+
+.btn {
+  margin-bottom: 15px;
+  border: 1px solid black;
+  border-radius: 6px;
+  box-shadow: 0.3rem 0.3rem #111827;
+  background-color: var(--color-3);
+  transition-duration: 0.2s;
+}
+
+.btn:hover {
+  transform: scale(1.01);
+  filter: brightness(90%);
+}
+
+.btn a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 17px;
+  padding: 8px 21px;
+  color: #111827;
+  font-weight: bold;
+}
+
+.email-login {
+  flex: 2;
+  padding: 40px;
+}
+
+.email-login a {
+  color: blue;
+  text-decoration: none;
+}
+
+.email-login a:hover {
+  border-bottom: 1px solid blue;
+}
+
+.login-h-container {
+  margin-bottom: 20px;
+}
+
+h1 {
+  margin-bottom: 5px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+input:focus {
+  outline: 1px solid #ffc85c;
+  transform: scale(1.005);
+}
+
+input[type="email"], 
+input[type="password"],
+input[type="text"],
+input[type="mobileNumber"],
+input[type="username"],
+input[type="confirmPassword"] {
+  line-height: 2.6;
+  padding: 0 10px;
+  font-size: 17px;
+  width: 100%;
+}
+
+input[type="submit"] {
+  background-color: var(--color-4);
+  padding: 10px 120px;
+  color: #fff;
+  font-size: 20px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  margin-block: 30px;
+  box-shadow: 0.3rem 0.3rem #111827;
+  cursor: pointer;
+  transition-duration: 0.2s;
+}
+
+input[type="submit"]:hover {
+  transform: scale(1.007);
+  filter: brightness(90%);
+}
+
+input[type="checkbox"] {
+  width: 17px;
+  height: 17px;
+}
+
+label {
+  position: relative;
+}
+
+label span {
+  transition-duration: 0.2s;
+  font-size: 18px;
+  color: #5a5959;
+  font-weight: 600;
+  position: absolute;
+  left: 6px;
+  top: 11px;
+  padding: 4px 8px;
+}
+
+label:focus-within span,
+.focus-span {
+  transform: translate(0.27rem, -94%) scale(0.8);
+  background-color: #fff;
+}
+
+.recovery {
+  display: flex;
+  justify-content: space-between;
+  font-size: 16px;
+}
+
+.recovery div {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+.recovery a {
+  margin-left: 10px;
+  white-space: nowrap;
+}
+
+.vector-1 {
+  background-image: url("https://iili.io/J1eCVYQ.jpg");
+  background-size: cover;
+  width: 100px;
+  height: 100px;
+  position: absolute;
+  top: 15%;
+  left: 15%;
+  z-index: -1;
+  opacity: 0.6;
+  transform: rotate(45deg);
+}
+
+.vector-2 {
+  background-image: url("https://iili.io/J1enqcx.md.jpg");
+  background-size: cover;
+  width: 100px;
+  height: 100px;
+  position: absolute;
+  top: 12%;
+  left: 72%;
+  z-index: -1;
+  opacity: 0.4;
+  transform: rotate(-45deg);
+}
+
+
+
+@media only screen and (max-width: 890px) {
+  .eye-cover1 {
+    left: 45%;
+  }
+
+  .eye-cover2 {
+    left: 52.5%;
+  }
+}
+
+@media only screen and (max-width: 860px) {
+  input[type="submit"] {
+    padding-inline: 0;
+  }
+}
+
+@media only screen and (max-width: 720px) {
+  .login-container {
+    flex-direction: column;
+  }
+
+  .eye-cover1 {
+    left: 41.2%;
+  }
+
+  .eye-cover2 {
+    left: 54.5%;
+  }
+
+  .vector-3 {
+    top: 89%;
+  }
+}
+
+@media only screen and (max-width: 420px) {
+  main {
+    padding: 0;
+  }
+
+  .social-login {
+    padding: 20px;
+  }
+
+  .logo {
+    font-size: 28px;
+  }
+
+  .logo img {
+    width: 92px;
+    height: 92px;
+  }
+
+  .email-login {
+    padding: 20px;
+  }
+
+  .btn a {
+    padding: 8px 12px;
+  }
+
+  .eye-cover1 {
+    left: 41%;
+  }
+
+  .eye-cover2 {
+    left: 56%;
+  }
+}
+
+.codepen-footer {
+  font-family: "Patrick Hand", cursive;
+  font-size: 17px;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 99;
+  background-color: #232323;
+  color: white;
+  text-align: center;
+  height: 38px;
+  font-size: 21px;
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 20px;
+}
+
+.codepen-footer a {
+  color: #ee7344;
+  text-decoration: none;
+}
+
+.animate-eyes {
+  transition: transform 0.3s ease-in-out;
+}

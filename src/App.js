@@ -1,25 +1,31 @@
-import logo from './logo.svg';
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
+import Appbar from './components/Appbar';
+import BankcraftLogin from './components/Bankcraftlogin';
+import BankcraftRegister from './components/Bankcraftregister';
 
-function App() {
+const App = () => {
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <div className="App">
+        <Appbar loggedIn={loggedIn} setLoggedIn={setLoggedIn} />
+        <Routes>
+          {[
+            { path: '/', element: <BankcraftLogin /> },
+            { path: '/register', element: <BankcraftRegister /> },
+            { path: '/BankcraftLogin', element: <BankcraftLogin /> },
+          ].map(({ path, element }, index) => (
+            <Route key={index} path={path} element={element} />
+          ))}
+        </Routes>
+      </div>
+    </Router>
   );
-}
+};
 
 export default App;
