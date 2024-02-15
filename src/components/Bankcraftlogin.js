@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { auth, signInWithEmailAndPassword } from '../firebase';
 import './loginstyle.css';
 
 const BankcraftLogin = () => {
@@ -16,34 +17,37 @@ const BankcraftLogin = () => {
       const { clientX, clientY, touches } = event;
       const cursorX = clientX || (touches && touches[0].clientX);
       const cursorY = clientY || (touches && touches[0].clientY);
-
+  
       if (cursorX === undefined || cursorY === undefined) {
         return;
       }
-
-      const angle1 = getAngle(cursorX, cursorY, eyes1.current);
-      const angle2 = getAngle(cursorX, cursorY, eyes2.current);
-
-      const distance = 5;
-
-      const transformEyes = (eyes, angle) => {
-        const offsetX = Math.cos(angle) * distance;
-        const offsetY = Math.sin(angle) * distance;
-        eyes.current.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
-      };
-
-      transformEyes(eyes1, angle1);
-      transformEyes(eyes2, angle2);
+  
+      // Ensure that eyes1.current and eyes2.current are not null or undefined
+      if (eyes1.current && eyes2.current) {
+        const angle1 = getAngle(cursorX, cursorY, eyes1.current);
+        const angle2 = getAngle(cursorX, cursorY, eyes2.current);
+  
+        const distance = 5;
+  
+        const calculateOffset = (angle) => ({
+          x: Math.cos(angle) * distance,
+          y: Math.sin(angle) * distance,
+        });
+  
+        eyes1.current.style.transform = `translate(${calculateOffset(angle1).x}px, ${calculateOffset(angle1).y}px)`;
+        eyes2.current.style.transform = `translate(${calculateOffset(angle2).x}px, ${calculateOffset(angle2).y}px)`;
+      }
     };
-
+  
     document.addEventListener('mousemove', updateEyesPosition);
     document.addEventListener('touchmove', updateEyesPosition);
-
+  
     return () => {
       document.removeEventListener('mousemove', updateEyesPosition);
       document.removeEventListener('touchmove', updateEyesPosition);
     };
   }, [eyes1, eyes2]);
+  
 
   const getAngle = (x, y, eyes) => {
     const eyesRect = eyes.getBoundingClientRect();
@@ -58,26 +62,20 @@ const BankcraftLogin = () => {
     setState((prevState) => ({ ...prevState, [name]: value }));
   };
 
-  const handleFormSubmission = (event) => {
+  const handleFormSubmission = async (event) => {
     event.preventDefault();
 
     const { email, password } = state;
 
-    if (email.trim() === '') {
-      alert('Please enter your email.');
-      return;
+    try {
+      // Login user with Firebase
+      await signInWithEmailAndPassword(auth, email, password);
+      
+      // Handle successful login (redirect, show success message, etc.)
+      console.log('Login successful!');
+    } catch (error) {
+      console.error('Error logging in:', error.message);
     }
-
-    if (password.trim() === '') {
-      alert('Please enter your password.');
-      return;
-    }
-
-    console.log('Email:', email);
-    console.log('Password:', password);
-
-    // Clear input values if needed
-    setState({ email: '', password: '' });
   };
 
   return (
@@ -120,28 +118,38 @@ const BankcraftLogin = () => {
               <div className="login-h-container">
                 <h1>Login to your account</h1>
                 <p>
-                  Don’t have an account? <Link to="/register">Sign up Free!</Link>
+                  Don’t have an account? <Link to="/BankcraftRegister">Sign up Free!</Link>
                 </p>
               </div>
               <form onSubmit={handleFormSubmission}>
-                {['email', 'password'].map((inputName, index) => (
-                  <label key={index} htmlFor={inputName}>
-                    <input
-                      id={inputName}
-                      name={inputName}
-                      type={inputName === 'password' ? 'password' : 'email'}
-                      placeholder={`Enter your ${inputName}`}
-                      value={state[inputName]}
-                      onChange={handleInputChange}
-                    />
-                  </label>
-                ))}
+                <label htmlFor="email">
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="Enter your email"
+                    value={state.email}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </label>
+                <label htmlFor="password">
+                  <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    placeholder="Enter your password"
+                    value={state.password}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </label>
                 <div className="recovery">
                   <div>
                     <input type="checkbox" id="remember" name="remember" />
                     <label htmlFor="remember">Remember me</label>
                   </div>
-                  <a href="">Forgot Password?</a>
+                  <a href="#">Forgot Password?</a>
                 </div>
                 <input type="submit" value="LOGIN" />
               </form>

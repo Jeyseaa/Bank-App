@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import { auth, createUserWithEmailAndPassword } from '../firebase'; // Assuming your firebase.js is in the parent directory
+import { doc, setDoc, getFirestore } from 'firebase/firestore';
 import './loginstyle.css';
-import { Link } from 'react-router-dom';
 
 const BankcraftRegister = () => {
   const [state, setState] = useState({
@@ -17,6 +18,8 @@ const BankcraftRegister = () => {
 
   const eyes1 = useRef(null);
   const eyes2 = useRef(null);
+  const navigate = useNavigate();
+  const firestore = getFirestore();
 
   useEffect(() => {
     const updateEyesPosition = (event) => {
@@ -99,14 +102,12 @@ const BankcraftRegister = () => {
     return errors;
   };
 
-  const navigate = useNavigate();
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setState((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleFormSubmission = (e) => {
+  const handleFormSubmission = async (e) => {
     e.preventDefault();
 
     const errors = validateForm();
@@ -116,22 +117,39 @@ const BankcraftRegister = () => {
       return;
     }
 
-    // Clear input values if needed
-    setState({
-      name: '',
-      email: '',
-      mobileNumber: '',
-      username: '',
-      password: '',
-      confirmPassword: '',
-      errors: {},
-      formSubmitted: true,
-    });
+    try {
+      const { name, email, mobileNumber, username, password } = state;
 
-    console.log('Form submitted successfully.');
+      // Create user in Firebase Authentication
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
 
-    // Redirect to BankcraftLogin
-    navigate('/BankcraftLogin');
+      // Save additional user data to Firestore
+      const userDocRef = doc(firestore, 'users', user.uid);
+      await setDoc(userDocRef, {
+        name,
+        email,
+        mobileNumber,
+        username,
+      });
+
+      // Clear input values if needed
+      setState({
+        name: '',
+        email: '',
+        mobileNumber: '',
+        username: '',
+        password: '',
+        confirmPassword: '',
+        errors: {},
+        formSubmitted: true,
+      });
+
+      console.log('User registered successfully.');
+      navigate('/BankcraftLogin');
+    } catch (error) {
+      console.error('Error registering user:', error.message);
+    }
   };
 
   return (

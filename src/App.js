@@ -1,6 +1,6 @@
+// App.js
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import './App.css';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Appbar from './components/Appbar';
 import BankcraftLogin from './components/Bankcraftlogin';
 import BankcraftRegister from './components/Bankcraftregister';
@@ -8,20 +8,20 @@ import BankcraftRegister from './components/Bankcraftregister';
 const App = () => {
   const [loggedIn, setLoggedIn] = useState(false);
 
-  
-
   return (
     <Router>
-      <div className="App">
+      <div>
         <Appbar loggedIn={loggedIn} setLoggedIn={setLoggedIn} />
         <Routes>
-          {[
-            { path: '/', element: <BankcraftLogin /> },
-            { path: '/register', element: <BankcraftRegister /> },
-            { path: '/BankcraftLogin', element: <BankcraftLogin /> },
-          ].map(({ path, element }, index) => (
-            <Route key={index} path={path} element={element} />
-          ))}
+          <Route
+            path="/BankcraftLogin"
+            element={<BankcraftLogin setLoggedIn={setLoggedIn} />}
+          />
+          <Route
+            path="/BankcraftRegister"
+            element={<BankcraftRegister />}
+          />
+          {/* Add more routes as needed */}
         </Routes>
       </div>
     </Router>
