@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { auth, signInWithEmailAndPassword } from '../firebase';
+import { auth, signInWithEmailAndPassword } from '../firebase'; // Import any additional dependencies as needed
 import './loginstyle.css';
 
 const BankcraftLogin = () => {
@@ -17,37 +17,36 @@ const BankcraftLogin = () => {
       const { clientX, clientY, touches } = event;
       const cursorX = clientX || (touches && touches[0].clientX);
       const cursorY = clientY || (touches && touches[0].clientY);
-  
+
       if (cursorX === undefined || cursorY === undefined) {
         return;
       }
-  
+
       // Ensure that eyes1.current and eyes2.current are not null or undefined
       if (eyes1.current && eyes2.current) {
         const angle1 = getAngle(cursorX, cursorY, eyes1.current);
         const angle2 = getAngle(cursorX, cursorY, eyes2.current);
-  
+
         const distance = 5;
-  
+
         const calculateOffset = (angle) => ({
           x: Math.cos(angle) * distance,
           y: Math.sin(angle) * distance,
         });
-  
+
         eyes1.current.style.transform = `translate(${calculateOffset(angle1).x}px, ${calculateOffset(angle1).y}px)`;
         eyes2.current.style.transform = `translate(${calculateOffset(angle2).x}px, ${calculateOffset(angle2).y}px)`;
       }
     };
-  
+
     document.addEventListener('mousemove', updateEyesPosition);
     document.addEventListener('touchmove', updateEyesPosition);
-  
+
     return () => {
       document.removeEventListener('mousemove', updateEyesPosition);
       document.removeEventListener('touchmove', updateEyesPosition);
     };
   }, [eyes1, eyes2]);
-  
 
   const getAngle = (x, y, eyes) => {
     const eyesRect = eyes.getBoundingClientRect();
@@ -67,14 +66,28 @@ const BankcraftLogin = () => {
 
     const { email, password } = state;
 
+    console.log('Attempting to log in with:', email, password);
+
     try {
       // Login user with Firebase
-      await signInWithEmailAndPassword(auth, email, password);
-      
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
       // Handle successful login (redirect, show success message, etc.)
-      console.log('Login successful!');
+      console.log('Login successful!', userCredential.user);
+
+      // Update the state to clear the input fields
+      setState({ email: '', password: '' });
     } catch (error) {
-      console.error('Error logging in:', error.message);
+      console.error('Error logging in:', error.code, error.message, error);
+
+      // Check error codes for specific cases
+      if (error.code === 'auth/user-not-found') {
+        alert('Email does not exist');
+      } else if (error.code === 'auth/wrong-password') {
+        alert('Password is incorrect');
+      } else {
+        // Handle other errors
+        alert('Email or Password are incorrect');
+      }
     }
   };
 

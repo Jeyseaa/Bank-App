@@ -1,16 +1,11 @@
-// index.js
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
-import firebase from 'firebase/app';
-import 'firebase/firestore';
-import firebaseConfig from './firebaseConfig'; // Import your Firebase configuration
-
-firebase.initializeApp(firebaseConfig);
+import { auth } from './firebase';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <App auth={auth} />
   </React.StrictMode>,
   document.getElementById('root')
 );

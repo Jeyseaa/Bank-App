@@ -1,8 +1,9 @@
-// Appbar.js
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { AppBar, Toolbar, Typography, Button } from '@mui/material';
 import { auth } from '../firebase';
+import './loginstyle.css';
 
 const Appbar = ({ loggedIn, setLoggedIn }) => {
   const handleLogout = async () => {
@@ -16,16 +17,23 @@ const Appbar = ({ loggedIn, setLoggedIn }) => {
 
   return (
     <AppBar position="static" style={{ backgroundColor: '#74959a' }}>
-      <Toolbar>
-        <Typography variant="h6" style={{ flexGrow: 1 }}>
-          BANKCRAFT
-        </Typography>
+      <Toolbar style={{ justifyContent: 'space-between' }}>
+        <div className="logo">
+          <img
+            src="https://iili.io/J1jnv9t.md.png"
+            alt="Bankcraft Logo"
+            width="100"
+            height="100"
+            style={{ marginLeft: '100px' }}
+          />
+          <Typography variant="h6" style={{ marginLeft: '10px', fontSize: '35px', fontWeight: 'bold', fontFamily: '"Unbounded", cursive' }}>
+            BANKCRAFT
+          </Typography>
+        </div>
         <div>
           {loggedIn ? (
             <>
-              <Button color="inherit" component={Link} to="/dashboard">
-                Dashboard
-              </Button>
+              
               <Button color="inherit" onClick={handleLogout}>
                 Logout
               </Button>
@@ -47,3 +55,4 @@ const Appbar = ({ loggedIn, setLoggedIn }) => {
 };
 
 export default Appbar;
+ 

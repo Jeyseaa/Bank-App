@@ -109,21 +109,21 @@ const BankcraftRegister = () => {
 
   const handleFormSubmission = async (e) => {
     e.preventDefault();
-
+  
     const errors = validateForm();
-
+  
     if (Object.keys(errors).length > 0) {
       setState((prev) => ({ ...prev, errors }));
       return;
     }
-
+  
     try {
       const { name, email, mobileNumber, username, password } = state;
-
+  
       // Create user in Firebase Authentication
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-
+  
       // Save additional user data to Firestore
       const userDocRef = doc(firestore, 'users', user.uid);
       await setDoc(userDocRef, {
@@ -132,7 +132,7 @@ const BankcraftRegister = () => {
         mobileNumber,
         username,
       });
-
+  
       // Clear input values if needed
       setState({
         name: '',
@@ -144,11 +144,16 @@ const BankcraftRegister = () => {
         errors: {},
         formSubmitted: true,
       });
-
+  
       console.log('User registered successfully.');
       navigate('/BankcraftLogin');
     } catch (error) {
-      console.error('Error registering user:', error.message);
+      if (error.code === 'auth/email-already-in-use') {
+        // Handle the case where the email is already in use
+        setState((prev) => ({ ...prev, errors: { email: 'Email is already in use.' } }));
+      } else {
+        console.error('Error registering user:', error.message);
+      }
     }
   };
 
