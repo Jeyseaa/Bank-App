@@ -2,14 +2,13 @@ import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
 import Appbar from './components/Appbar';
-import BankcraftLogin from './components/Bankcraftlogin';
-import BankcraftRegister from './components/Bankcraftregister';
+import BankcraftRegister from './components/Bankcraftregister'; 
+import BankcraftLogin from './components/Bankcraftlogin'; 
+import Dashboard from './components/Dashboard';
 import { AppBar } from '@mui/material';
 
 const App = () => {
   const [loggedIn, setLoggedIn] = useState(false);
-
-  
 
   return (
     <Router>
@@ -20,6 +19,7 @@ const App = () => {
             { path: '/AppBar', element: <AppBar /> },
             { path: '/BankcraftRegister', element: <BankcraftRegister /> },
             { path: '/BankcraftLogin', element: <BankcraftLogin /> },
+            { path: '/dashboard/*', element: <Dashboard /> },
           ].map(({ path, element }, index) => (
             <Route key={index} path={path} element={element} />
           ))}

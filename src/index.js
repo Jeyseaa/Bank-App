@@ -1,11 +1,10 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom';
 import App from './App';
 import { auth } from './firebase';
 
-ReactDOM.render(
+createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <App auth={auth} />
-  </React.StrictMode>,
-  document.getElementById('root')
+  </React.StrictMode>
 );

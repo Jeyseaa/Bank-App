@@ -1,0 +1,37 @@
+.dashboard-container {
+    display: flex;
+  }
+  
+  .sidebar {
+    width: 200px;
+    background-color: #74959a;
+    color: #fff;
+    padding: 20px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .sidebar-item {
+    text-decoration: none;
+    color: #fff;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 5px;
+  }
+ 
+  .sidebar-item:hover {
+    background-color: #555;
+  }
+  
+  .sidebar-item.active {
+    background-color: #777;
+    border: 1px solid #000; /* Add a black border to the active item */
+  }
+  
+  .main-content {
+    flex: 1;
+    padding: 20px;
+  }
+  
