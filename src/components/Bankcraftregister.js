@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { auth, createUserWithEmailAndPassword } from '../firebase'; // Assuming your firebase.js is in the parent directory
+import { useNavigate} from 'react-router-dom';
+import { auth, createUserWithEmailAndPassword, signInWithPopup } from '../firebase'; // Assuming your firebase.js is in the parent directory
 import { doc, setDoc, getFirestore } from 'firebase/firestore';
+import { googleProvider, facebookProvider, twitterProvider } from '../firebase';
 import './loginstyle.css';
 
 const BankcraftRegister = () => {
@@ -109,21 +110,21 @@ const BankcraftRegister = () => {
 
   const handleFormSubmission = async (e) => {
     e.preventDefault();
-  
+
     const errors = validateForm();
-  
+
     if (Object.keys(errors).length > 0) {
       setState((prev) => ({ ...prev, errors }));
       return;
     }
-  
+
     try {
       const { name, email, mobileNumber, username, password } = state;
-  
+
       // Create user in Firebase Authentication
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-  
+
       // Save additional user data to Firestore with an initial balance of 500
       const userDocRef = doc(firestore, 'users', user.uid);
       await setDoc(userDocRef, {
@@ -133,7 +134,7 @@ const BankcraftRegister = () => {
         username,
         balance: 500, // Initial balance
       });
-  
+
       // Clear input values if needed
       setState({
         name: '',
@@ -145,7 +146,7 @@ const BankcraftRegister = () => {
         errors: {},
         formSubmitted: true,
       });
-  
+
       console.log('User registered successfully.');
       navigate('/BankcraftLogin');
     } catch (error) {
@@ -157,7 +158,20 @@ const BankcraftRegister = () => {
       }
     }
   };
-  
+
+  const handleSocialMediaLogin = async (provider) => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      // Handle additional actions after social media login if needed
+
+      console.log(`${provider.providerId} login successful. User:`, user);
+    } catch (error) {
+      console.error(`Error during ${provider.providerId} login:`, error.message);
+    }
+  };
+
   return (
     <div className="wrapper">
       <main>
@@ -178,20 +192,20 @@ const BankcraftRegister = () => {
                 <p>BankCraft</p>
               </div>
               <p>Building your future, one transaction at a time – that's the art of Bank Craft.</p>
-              <div className="social-grp">
-                {['Twitter', 'Facebook', 'Google'].map((socialMedia, index) => (
-                  <div key={index} className="btn">
-                    <a href="#">
-                      <img
-                        src={`https://assets.codepen.io/9277864/social-media-${socialMedia.toLowerCase()}.svg`}
-                        alt=""
-                        width="32"
-                        height="32"
-                      />
-                      <span>{socialMedia}</span>
-                    </a>
-                  </div>
-                ))}
+              <div className="social-grp" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', fontSize: '17px', padding: '8px 21px', color: '#111827', fontWeight: 'bold' }}>
+                <div className="btn" onClick={() => handleSocialMediaLogin(twitterProvider)}>
+                  <img src="https://assets.codepen.io/9277864/social-media-twitter.svg" alt="" width="300" height="32" />
+                  <span >Twitter</span>
+                </div>
+                <div className="btn" onClick={() => handleSocialMediaLogin(facebookProvider)}>
+                  <img src="https://assets.codepen.io/9277864/social-media-facebook.svg" alt="" width="300" height="32" />
+                  <span>Facebook</span>
+                </div>
+                <div className="btn" onClick={() => handleSocialMediaLogin(googleProvider)}>
+                  <img src="https://assets.codepen.io/9277864/social-media-google.svg" alt="" width="300" height="32" />
+                  <span>Google</span>
+                </div>
+                <p>You can login using this social media account</p>
               </div>
             </div>
             <div className="email-login">

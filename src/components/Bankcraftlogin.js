@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { auth, signInWithEmailAndPassword, sendPasswordResetEmail } from '../firebase';
- // Import any additional dependencies as needed
+import { auth, signInWithEmailAndPassword, sendPasswordResetEmail, signInWithPopup } from '../firebase';
+import { googleProvider, facebookProvider, twitterProvider } from '../firebase'; // Import social media providers
 import './loginstyle.css';
 
 const BankcraftLogin = () => {
@@ -107,6 +107,20 @@ const BankcraftLogin = () => {
     }
   };
 
+  const handleSocialMediaLogin = async (provider) => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      // Handle successful login (redirect, show success message, etc.)
+      console.log('Social media login successful!', user);
+
+      // Redirect to the Dashboard
+      navigate('/dashboard');
+    } catch (error) {
+      console.error('Error with social media login:', error.message);
+    }
+  };
+
   return (
     <div className="wrapper">
       <main>
@@ -127,21 +141,22 @@ const BankcraftLogin = () => {
                 <p>BankCraft</p>
               </div>
               <p>Building your future, one transaction at a time – that's the art of Bank Craft.</p>
-              <div className="social-grp">
-                {['Twitter', 'Facebook', 'Google'].map((socialMedia, index) => (
-                  <div key={index} className="btn">
-                    <a href="#">
-                      <img
-                        src={`https://assets.codepen.io/9277864/social-media-${socialMedia.toLowerCase()}.svg`}
-                        alt=""
-                        width="32"
-                        height="32"
-                      />
-                      <span>{socialMedia}</span>
-                    </a>
-                  </div>
-                ))}
-              </div>
+              <div className="social-grp" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', fontSize: '17px', padding: '8px 21px', color: '#111827', fontWeight: 'bold' }}>
+  <div className="btn" onClick={() => handleSocialMediaLogin(twitterProvider)}>
+    <img src="https://assets.codepen.io/9277864/social-media-twitter.svg" alt="" width="300" height="32" />
+    <span >Twitter</span>
+  </div>
+  <div className="btn" onClick={() => handleSocialMediaLogin(facebookProvider)}>
+    <img src="https://assets.codepen.io/9277864/social-media-facebook.svg" alt="" width="300" height="32" />
+    <span>Facebook</span>
+  </div>
+  <div className="btn" onClick={() => handleSocialMediaLogin(googleProvider)}>
+    <img src="https://assets.codepen.io/9277864/social-media-google.svg" alt="" width="300" height="32" />
+    <span>Google</span>
+  </div>
+  <p>You can login using this social media account</p>
+</div>
+
             </div>
             <div className="email-login">
               <div className="login-h-container">
