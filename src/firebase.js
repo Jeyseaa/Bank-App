@@ -1,7 +1,7 @@
 // firebase.js
 
 import { initializeApp } from 'firebase/app';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
@@ -17,4 +17,4 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const firestore = getFirestore(app);
 
-export { auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, firestore };
+export { auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, firestore };

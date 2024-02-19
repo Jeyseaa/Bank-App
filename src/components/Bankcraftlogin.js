@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
-import { auth, signInWithEmailAndPassword } from '../firebase'; // Import any additional dependencies as needed
+import { Link, useNavigate } from 'react-router-dom';
+import { auth, signInWithEmailAndPassword, sendPasswordResetEmail } from '../firebase';
+ // Import any additional dependencies as needed
 import './loginstyle.css';
 
 const BankcraftLogin = () => {
@@ -11,6 +12,7 @@ const BankcraftLogin = () => {
 
   const eyes1 = useRef(null);
   const eyes2 = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const updateEyesPosition = (event) => {
@@ -74,8 +76,10 @@ const BankcraftLogin = () => {
       // Handle successful login (redirect, show success message, etc.)
       console.log('Login successful!', userCredential.user);
 
-      // Update the state to clear the input fields
       setState({ email: '', password: '' });
+
+      // Redirect to the Dashboard
+      navigate('/dashboard');
     } catch (error) {
       console.error('Error logging in:', error.code, error.message, error);
 
@@ -88,6 +92,18 @@ const BankcraftLogin = () => {
         // Handle other errors
         alert('Email or Password are incorrect');
       }
+    }
+  };
+
+  const handleResetPassword = async (e) => {
+    e.preventDefault();
+
+    try {
+      await sendPasswordResetEmail(auth, state.email);
+      alert('Password reset email sent. Check your inbox for instructions.');
+    } catch (error) {
+      console.error('Error sending reset email:', error.message);
+      alert('Error sending reset email. Please try again.');
     }
   };
 
@@ -162,7 +178,9 @@ const BankcraftLogin = () => {
                     <input type="checkbox" id="remember" name="remember" />
                     <label htmlFor="remember">Remember me</label>
                   </div>
-                  <a href="#">Forgot Password?</a>
+                  <Link to="#" onClick={handleResetPassword}>
+                    Forgot Password?
+                  </Link>
                 </div>
                 <input type="submit" value="LOGIN" />
               </form>

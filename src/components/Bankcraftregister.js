@@ -124,13 +124,14 @@ const BankcraftRegister = () => {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
   
-      // Save additional user data to Firestore
+      // Save additional user data to Firestore with an initial balance of 500
       const userDocRef = doc(firestore, 'users', user.uid);
       await setDoc(userDocRef, {
         name,
         email,
         mobileNumber,
         username,
+        balance: 500, // Initial balance
       });
   
       // Clear input values if needed
@@ -156,7 +157,7 @@ const BankcraftRegister = () => {
       }
     }
   };
-
+  
   return (
     <div className="wrapper">
       <main>

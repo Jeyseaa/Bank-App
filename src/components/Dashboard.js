@@ -1,20 +1,73 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { auth } from '../firebase'; // Import your Firebase authentication functions
-import './dashboard.css'; // Import your CSS file for styling
+import { auth, firestore } from '../firebase';
+import { doc, getDoc } from 'firebase/firestore';
+import './dashboard.css';
 
 const Dashboard = () => {
   const [selectedOption, setSelectedOption] = useState(null);
+  const [user, setUser] = useState(null);
+  const [balance, setBalance] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [userData, setUserData] = useState(null);
   const navigate = useNavigate();
 
-  const handleSidebarClick = async (option) => {
+  useEffect(() => {
+    const getUserData = async () => {
+      try {
+        const currentUser = auth.currentUser;
+
+        if (currentUser) {
+          setUser(currentUser);
+
+          // Use local storage to persist the user UID
+          localStorage.setItem('userUID', currentUser.uid);
+
+          // Fetch user data based on UID
+          const userDocRef = doc(firestore, `users/${currentUser.uid}`);
+          const userDocSnapshot = await getDoc(userDocRef);
+
+          if (userDocSnapshot.exists()) {
+            const userData = userDocSnapshot.data();
+            setUserData(userData);
+            setBalance(userData.balance);
+          }
+        } else {
+          console.log('No current user found.');
+          const userUID = localStorage.getItem('userUID');
+
+          if (userUID) {
+            // If there is a user UID in local storage, try to fetch user data
+            const userDocRef = doc(firestore, `users/${userUID}`);
+            const userDocSnapshot = await getDoc(userDocRef);
+
+            if (userDocSnapshot.exists()) {
+              const userData = userDocSnapshot.data();
+              setUserData(userData);
+              setBalance(userData.balance);
+            }
+          } else {
+            // If no user UID in local storage, redirect to login
+            navigate('/BankcraftLogin');
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getUserData();
+  }, [navigate]);
+
+  const handleSidebarClick = (option) => {
     if (option === 'logout') {
       try {
-        // Add your logout logic using Firebase auth.signOut()
-        await auth.signOut();
+        auth.signOut();
+        // Remove user UID from local storage on logout
+        localStorage.removeItem('userUID');
         console.log('User logged out successfully.');
-
-        // After logging out, redirect to the BankcraftRegister page
         navigate('/BankcraftLogin');
       } catch (error) {
         console.error('Error logging out:', error.message);
@@ -27,9 +80,30 @@ const Dashboard = () => {
   const getContentForOption = () => {
     switch (selectedOption) {
       case 'overview':
-        return <h2>Welcome to Overview</h2>;
+        return (
+          <div>
+            <h2>Welcome to Overview</h2>
+            {user && <p>User: {user.email}</p>}
+            {userData && (
+              <div>
+                <p>User Data: {JSON.stringify(userData)}</p>
+                {/* Display other relevant user data or transaction history */}
+              </div>
+            )}
+          </div>
+        );
       case 'balance':
-        return <h2>Welcome to Balance</h2>;
+        return (
+          <div>
+            <h2>Welcome to Balance</h2>
+            {user && <p>User: {user.email}</p>}
+            {loading ? (
+              <p>Loading balance...</p>
+            ) : (
+              <p>Your current balance is: ₱{balance}</p>
+            )}
+          </div>
+        );
       case 'transfer':
         return <h2>Welcome to Transfer Funds</h2>;
       case 'deposit':
@@ -37,7 +111,7 @@ const Dashboard = () => {
       case 'withdraw':
         return <h2>Welcome to Withdraw</h2>;
       default:
-        return 
+        return null;
     }
   };
 
