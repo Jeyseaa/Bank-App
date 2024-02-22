@@ -27,23 +27,26 @@ const BankcraftRegister = () => {
       const { clientX, clientY, touches } = event;
       const cursorX = clientX || (touches && touches[0].clientX);
       const cursorY = clientY || (touches && touches[0].clientY);
-
+    
       if (cursorX === undefined || cursorY === undefined) {
         return;
       }
-
-      const angle1 = getAngle(cursorX, cursorY, eyes1.current);
-      const angle2 = getAngle(cursorX, cursorY, eyes2.current);
-
-      const distance = 5;
-
-      const calculateOffset = (angle) => ({
-        x: Math.cos(angle) * distance,
-        y: Math.sin(angle) * distance,
-      });
-
-      eyes1.current.style.transform = `translate(${calculateOffset(angle1).x}px, ${calculateOffset(angle1).y}px)`;
-      eyes2.current.style.transform = `translate(${calculateOffset(angle2).x}px, ${calculateOffset(angle2).y}px)`;
+    
+      // Ensure that eyes1.current and eyes2.current are not null or undefined
+      if (eyes1.current && eyes2.current) {
+        const angle1 = getAngle(cursorX, cursorY, eyes1.current);
+        const angle2 = getAngle(cursorX, cursorY, eyes2.current);
+    
+        const distance = 5;
+    
+        const calculateOffset = (angle) => ({
+          x: Math.cos(angle) * distance,
+          y: Math.sin(angle) * distance,
+        });
+    
+        eyes1.current.style.transform = `translate(${calculateOffset(angle1).x}px, ${calculateOffset(angle1).y}px)`;
+        eyes2.current.style.transform = `translate(${calculateOffset(angle2).x}px, ${calculateOffset(angle2).y}px)`;
+      }
     };
 
     document.addEventListener('mousemove', updateEyesPosition);
@@ -110,22 +113,26 @@ const BankcraftRegister = () => {
 
   const handleFormSubmission = async (e) => {
     e.preventDefault();
-
+  
     const errors = validateForm();
-
+  
     if (Object.keys(errors).length > 0) {
       setState((prev) => ({ ...prev, errors }));
       return;
     }
-
+  
     try {
       const { name, email, mobileNumber, username, password } = state;
-
+  
       // Create user in Firebase Authentication
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-
-      // Save additional user data to Firestore with an initial balance of 500
+  
+      // Generate account number
+      const last4Digits = mobileNumber.slice(-4);
+      const accountNumber = `143${last4Digits}`;
+  
+      // Save additional user data to Firestore with an initial balance of 500 and the generated account number
       const userDocRef = doc(firestore, 'users', user.uid);
       await setDoc(userDocRef, {
         name,
@@ -133,8 +140,9 @@ const BankcraftRegister = () => {
         mobileNumber,
         username,
         balance: 500, // Initial balance
+        accountNumber, // Generated account number
       });
-
+  
       // Clear input values if needed
       setState({
         name: '',
@@ -146,7 +154,7 @@ const BankcraftRegister = () => {
         errors: {},
         formSubmitted: true,
       });
-
+  
       console.log('User registered successfully.');
       navigate('/BankcraftLogin');
     } catch (error) {
@@ -158,6 +166,7 @@ const BankcraftRegister = () => {
       }
     }
   };
+  
 
   const handleSocialMediaLogin = async (provider) => {
     try {

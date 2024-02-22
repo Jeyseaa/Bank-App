@@ -19,28 +19,27 @@ const BankcraftLogin = () => {
       const { clientX, clientY, touches } = event;
       const cursorX = clientX || (touches && touches[0].clientX);
       const cursorY = clientY || (touches && touches[0].clientY);
-
+    
       if (cursorX === undefined || cursorY === undefined) {
         return;
       }
-
+    
       // Ensure that eyes1.current and eyes2.current are not null or undefined
       if (eyes1.current && eyes2.current) {
         const angle1 = getAngle(cursorX, cursorY, eyes1.current);
         const angle2 = getAngle(cursorX, cursorY, eyes2.current);
-
+    
         const distance = 5;
-
+    
         const calculateOffset = (angle) => ({
           x: Math.cos(angle) * distance,
           y: Math.sin(angle) * distance,
         });
-
+    
         eyes1.current.style.transform = `translate(${calculateOffset(angle1).x}px, ${calculateOffset(angle1).y}px)`;
         eyes2.current.style.transform = `translate(${calculateOffset(angle2).x}px, ${calculateOffset(angle2).y}px)`;
       }
     };
-
     document.addEventListener('mousemove', updateEyesPosition);
     document.addEventListener('touchmove', updateEyesPosition);
 
@@ -52,6 +51,12 @@ const BankcraftLogin = () => {
 
   const getAngle = (x, y, eyes) => {
     const eyesRect = eyes.getBoundingClientRect();
+
+    // Ensure that eyesRect is not null or undefined
+    if (!eyesRect) {
+      return 0;
+    }
+
     const eyesX = eyesRect.left + eyesRect.width / 2;
     const eyesY = eyesRect.top + eyesRect.height / 2;
 

@@ -4,6 +4,7 @@ import { auth, firestore } from '../firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import './dashboard.css';
 
+
 const Dashboard = () => {
   const [selectedOption, setSelectedOption] = useState(null);
   const [user, setUser] = useState(null);
@@ -81,17 +82,66 @@ const Dashboard = () => {
     switch (selectedOption) {
       case 'overview':
         return (
-          <div>
-            <h2>Welcome to Overview</h2>
-            {user && <p>User: {user.email}</p>}
-            {userData && (
-              <div>
-                <p>User Data: {JSON.stringify(userData)}</p>
-                {/* Display other relevant user data or transaction history */}
+          <div className="container" style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-start' }}>
+            <div className="card">
+              <div className="card-inner">
+                <div className="front">
+                  <img src="https://i.ibb.co/PYss3yv/map.png" className="map-img" alt="Map" />
+                  <div className="row">
+                    <img src="https://i.ibb.co/G9pDnYJ/chip.png" width="60px" alt="Chip" />
+                    <img src="https://i.ibb.co/GptPpp4/bankcrafttext.png" width="100px" alt="Visa Logo" />
+                  </div>
+                  <div className="row card-no">
+                    <p>{userData?.cardNumber?.slice(0, 4)}</p>
+                    <p>{userData?.cardNumber?.slice(4, 8)}</p>
+                    <p>{userData?.cardNumber?.slice(8, 12)}</p>
+                    <p>{userData?.cardNumber?.slice(12)}</p>
+                  </div>
+                  <div className="row card-holder">
+                    <p>CARD HOLDER</p>
+                    <p>VALID TILL</p>
+                  </div>
+                  <div className="row name">
+                    <p>{userData && userData.name}</p>
+                    <p>10 / 30</p>
+                  </div>
+                </div>
+                <div className="back">
+                  <img src="https://i.ibb.co/PYss3yv/map.png" className="map-img" alt="Map" />
+                  <div className="bar"></div>
+                  <div className="row card-cvv">
+                    <div>
+                      <img src="https://i.ibb.co/S6JG8px/pattern.png" alt="Pattern" />
+                    </div>
+                    <p>{userData && userData.cvv}</p>
+                  </div>
+                  <div className="row card-text">
+                    <p>Building your future, one transaction at a time – that's the art of Bank Craft.</p>
+                  </div>
+                  <div className="row signature">
+                    <p>CUSTOMER SIGNATURE</p>
+                    <img src="https://i.ibb.co/GptPpp4/bankcrafttext.png" width="80px" alt="Visa Logo" />
+                  </div>
+                </div>
               </div>
-            )}
+            </div>
+            <div className="firstRow">
+  <div className="elemfirst" id="first">
+    <h5>ACCOUNT DETAILS</h5>
+    <p><strong>ACCOUNT HOLDER</strong><br />{userData && userData.name}</p>
+    <p><strong>ACCOUNT NO</strong><br />{userData && userData.accountNumber}</p>
+    <p><strong>ACCOUNT TYPE</strong><br />Savings Account</p>
+    <p></p>
+  </div>
+  <div className="elemfirst">
+    <h5>BALANCE (in Philippines Peso (₱))</h5>
+    <div id="balance">₱ {balance}</div>
+  </div>
+</div>
           </div>
         );
+      
+
       case 'balance':
         return (
           <div>
@@ -103,17 +153,17 @@ const Dashboard = () => {
               <p>Your current balance is: ₱{balance}</p>
             )}
           </div>
-        );
-      case 'transfer':
-        return <h2>Welcome to Transfer Funds</h2>;
-      case 'deposit':
-        return <h2>Welcome to Deposit</h2>;
-      case 'withdraw':
-        return <h2>Welcome to Withdraw</h2>;
-      default:
-        return null;
-    }
-  };
+       );
+       case 'transfer':
+         return <h2>Welcome to Transfer Funds</h2>;
+       case 'deposit':
+         return <h2>Welcome to Deposit</h2>;
+       case 'withdraw':
+         return <h2>Welcome to Withdraw</h2>;
+       default:
+         return null;
+     }
+   };
 
   return (
     <div className="dashboard-container">
@@ -125,13 +175,15 @@ const Dashboard = () => {
         <div className={`sidebar-item ${selectedOption === 'balance' ? 'active' : ''}`} onClick={() => handleSidebarClick('balance')}>
           Balance
         </div>
-        <div className={`sidebar-item ${selectedOption === 'transfer' ? 'active' : ''}`} onClick={() => handleSidebarClick('transfer')}>
+        {/* ... (other sidebar items) */}
+        {/* Add other sidebar items based on your application requirements */}
+        <div className="sidebar-item" onClick={() => handleSidebarClick('transfer')}>
           Transfer Funds
         </div>
-        <div className={`sidebar-item ${selectedOption === 'deposit' ? 'active' : ''}`} onClick={() => handleSidebarClick('deposit')}>
+        <div className="sidebar-item" onClick={() => handleSidebarClick('deposit')}>
           Deposit
         </div>
-        <div className={`sidebar-item ${selectedOption === 'withdraw' ? 'active' : ''}`} onClick={() => handleSidebarClick('withdraw')}>
+        <div className="sidebar-item" onClick={() => handleSidebarClick('withdraw')}>
           Withdraw
         </div>
         <div className="sidebar-item" onClick={() => handleSidebarClick('logout')}>
