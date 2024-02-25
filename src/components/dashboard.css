@@ -228,12 +228,15 @@
 
 .deposit-form {
   width: 100%;
-  max-width: 600px; /* Adjust the maximum width based on your design */
+  max-width: 600px;
   margin-top: 20px;
   padding: 20px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add a subtle box shadow for better visibility */
-  border-radius: 8px; /* Round the corners for a modern look */
+  border-radius: 8px;
+  box-shadow: 0 0 30px rgba(4, 190, 247, 0.1), 0 0 30px rgba(4, 190, 247, 0.1); /* Set color to the same color for a solid highlight */
+  border: 3px solid black;
 }
+
+
 
 .deposit-form label {
   display: flex;

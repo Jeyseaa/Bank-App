@@ -16,24 +16,23 @@ const Appbar = ({ loggedIn, setLoggedIn }) => {
   };
 
   return (
-    <AppBar position="static" style={{ backgroundColor: '#74959a' }}>
-      <Toolbar style={{ justifyContent: 'space-between' }}>
+    <AppBar position="static" style={{ backgroundColor: '#74959a', width: '120%', margin: '0 auto' }}>
+      <Toolbar style={{ justifyContent: 'space-between', alignItems: 'center' }}>
         <div className="logo">
           <img
             src="https://iili.io/J1jnv9t.md.png"
             alt="Bankcraft Logo"
             width="100"
             height="100"
-            style={{ marginLeft: '100px' }}
+            style={{ marginLeft: '10px' }}  // Adjusted marginLeft for logo
           />
           <Typography variant="h6" style={{ marginLeft: '10px', fontSize: '35px', fontWeight: 'bold', fontFamily: '"Unbounded", cursive' }}>
             BANKCRAFT
           </Typography>
         </div>
-        <div>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
           {loggedIn ? (
             <>
-              
               <Button color="inherit" onClick={handleLogout}>
                 Logout
               </Button>
@@ -55,4 +54,3 @@ const Appbar = ({ loggedIn, setLoggedIn }) => {
 };
 
 export default Appbar;
- 

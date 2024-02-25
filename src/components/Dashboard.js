@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth, firestore } from '../firebase';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import './dashboard.css';
+import { Typography } from '@mui/material';
 
 const Dashboard = () => {
   const [selectedOption, setSelectedOption] = useState(null);
@@ -184,9 +185,21 @@ const Dashboard = () => {
       case 'deposit':
         return (
           <div className="deposit-container">
-            <h2>Welcome to Deposit</h2>
+          <div className="logo">
+          <img
+            src="https://iili.io/J1jnv9t.md.png"
+            alt="Bankcraft Logo"
+            width="100"
+            height="100"
+            
+          />
+          <Typography variant="h6" style={{ marginLeft: '10px', fontSize: '35px', fontWeight: 'bold', fontFamily: '"Unbounded", cursive' }}>
+            BANKCRAFT
+          </Typography>
+        </div>
             {user && (
               <form className="deposit-form" onSubmit={handleDeposit}>
+                <h2>Deposit Form</h2>
                 <label htmlFor="depositAmount">
                   Enter Amount:   
                   <input
@@ -305,8 +318,105 @@ const Dashboard = () => {
             {successMessage && <p className="success-message">{successMessage}</p>}
           </div>
         );
-      case 'withdraw':
-        return <h2>Welcome to Withdraw</h2>;
+        case 'withdraw':
+          return (
+            <div className="deposit-container">
+              <div className="logo">
+                <img
+                  src="https://iili.io/J1jnv9t.md.png"
+                  alt="Bankcraft Logo"
+                  width="100"
+                  height="100"
+                />
+                <Typography
+                  variant="h6"
+                  style={{
+                    marginLeft: '10px',
+                    fontSize: '35px',
+                    fontWeight: 'bold',
+                    fontFamily: '"Unbounded", cursive',
+                  }}
+                >
+                  BANKCRAFT
+                </Typography>
+              </div>
+              {user && (
+                <form className="deposit-form" onSubmit={handleWithdraw}>
+                  <h2>Withdraw Form</h2>
+                  <label htmlFor="withdrawAmount">
+                    Enter Amount:
+                    <input
+                      type="text"
+                      id="withdrawAmount"
+                      name="withdrawAmount"
+                      value={withdrawData.withdrawAmount}
+                      onChange={handleWithdrawInputChange}
+                      required
+                    />
+                  </label>
+        
+                  <label htmlFor="withdrawMethod">
+                    Withdrawal Method:
+                    <select
+                      id="withdrawMethod"
+                      name="withdrawMethod"
+                      value={withdrawData.withdrawMethod}
+                      onChange={handleWithdrawInputChange}
+                      required
+                    >
+                      <option value="">Select Withdrawal Method</option>
+                      <option value="bank">Bank Transfer</option>
+                      <option value="cash">Cash Withdrawal</option>
+                    </select>
+                  </label>
+        
+                  {/* Additional fields based on withdrawal method, if needed */}
+                  {withdrawData.withdrawMethod === 'bank' && (
+                    <>
+                      <label htmlFor="bankAccount">
+                        Bank Account:
+                        <input
+                          type="text"
+                          id="bankAccount"
+                          name="bankAccount"
+                          value={withdrawData.bankAccount}
+                          onChange={handleWithdrawInputChange}
+                          required
+                        />
+                      </label>
+                      <label htmlFor="bankBranch">
+                        Bank Branch:
+                        <input
+                          type="text"
+                          id="bankBranch"
+                          name="bankBranch"
+                          value={withdrawData.bankBranch}
+                          onChange={handleWithdrawInputChange}
+                          required
+                        />
+                      </label>
+                    </>
+                  )}
+        
+                  <label htmlFor="withdrawDate">
+                    Date:
+                    <input
+                      type="date"
+                      id="withdrawDate"
+                      name="withdrawDate"
+                      value={withdrawData.withdrawDate}
+                      onChange={handleWithdrawInputChange}
+                      required
+                    />
+                  </label>
+        
+                  <button type="submit">Withdraw</button>
+                </form>
+              )}
+              {successMessage && <p className="success-message">{successMessage}</p>}
+            </div>
+          );
+        
       default:
         return null;
     }
@@ -341,7 +451,7 @@ const Dashboard = () => {
     }
   };
 
-  const getAccountNumberAndName = () => {
+  const getAccountNumberAndName = useCallback(() => {
     if (depositData.paymentMethod === 'bankcard') {
       const accountNumber = userData?.accountNumber || '';
       const name = userData?.name || '';
@@ -357,15 +467,53 @@ const Dashboard = () => {
         name: '',
       }));
     }
-  };
-
+  }, [userData, depositData.paymentMethod]);
+  
   useEffect(() => {
     getAccountNumberAndName();
-  }, [depositData.paymentMethod]);
+  }, [getAccountNumberAndName]);
+  
 
   useEffect(() => {
     localStorage.setItem('depositData', JSON.stringify(depositData));
   }, [depositData]);
+
+  const [withdrawData, setWithdrawData] = useState(() => {
+    const savedWithdrawData = JSON.parse(localStorage.getItem('withdrawData')) || {
+      withdrawAmount: '',
+      withdrawMethod: '',
+      // Additional fields for withdrawal method, if needed
+      withdrawDate: new Date().toISOString().split('T')[0],
+    };
+    return savedWithdrawData;
+  });
+  
+  const handleWithdrawInputChange = (e) => {
+    const { name, value } = e.target;
+    setWithdrawData((prev) => ({ ...prev, [name]: value }));
+  };
+  
+  const handleWithdraw = async (e) => {
+    e.preventDefault();
+  
+    try {
+      const updatedBalance = balance - parseFloat(withdrawData.withdrawAmount);
+      const userDocRef = doc(firestore, `users/${user.uid}`);
+      await updateDoc(userDocRef, { balance: updatedBalance });
+  
+      setSuccessMessage(`Withdrawal successful! ₱${withdrawData.withdrawAmount} has been deducted from your balance.`);
+  
+      setWithdrawData({
+        withdrawAmount: '',
+        withdrawMethod: '',
+        // Additional fields for withdrawal method, if needed
+        withdrawDate: new Date().toISOString().split('T')[0],
+      });
+    } catch (error) {
+      console.error('Error during withdrawal:', error.message);
+    }
+  };
+  
 
   return (
     <div className="dashboard-container">
