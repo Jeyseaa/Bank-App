@@ -4,12 +4,13 @@ import { auth, firestore } from '../firebase';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import './dashboard.css';
 import { Typography } from '@mui/material';
+import { getDocs, collection, where } from 'firebase/firestore';
 
 const Dashboard = () => {
   const [selectedOption, setSelectedOption] = useState(null);
   const [user, setUser] = useState(null);
   const [balance, setBalance] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading,setLoading] = useState(true);
   const [userData, setUserData] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
   const [depositData, setDepositData] = useState(() => {
@@ -99,6 +100,75 @@ const Dashboard = () => {
       setSelectedOption(option);
     }
   };
+  const [transferData, setTransferData] = useState({
+    recipientAccountNumber: '',
+    transferAmount: '',
+  });
+
+  const handleTransferInputChange = (e) => {
+    const { name, value } = e.target;
+    setTransferData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleTransfer = async (e) => {
+    e.preventDefault();
+  
+    try {
+      console.log('Transfer data:', transferData);
+  
+      // Query the 'users' collection to find the recipient by account number
+      const querySnapshot = await getDocs(collection(firestore, 'users'), where('accountNumber', '==', transferData.recipientAccountNumber));
+  
+      if (!querySnapshot.empty) {
+        // Assuming there's only one user with the provided account number
+        const recipientUserDocSnapshot = querySnapshot.docs[0];
+  
+        console.log('Recipient User Doc Snapshot:', recipientUserDocSnapshot.data());
+  
+        const recipientUserData = recipientUserDocSnapshot.data();
+  
+        if (recipientUserData) {
+          const updatedBalance = balance - parseFloat(transferData.transferAmount);
+  
+          // Update the sender's balance
+          const senderUserDocRef = doc(firestore, 'users', user.uid);
+          await updateDoc(senderUserDocRef, { balance: updatedBalance });
+  
+          // Update the recipient's balance
+          const recipientBalance = recipientUserData.balance + parseFloat(transferData.transferAmount);
+          await updateDoc(recipientUserDocSnapshot.ref, { balance: recipientBalance });
+  
+          setSuccessMessage(`Transfer successful! ₱${transferData.transferAmount} has been sent to ${transferData.recipientAccountNumber}.`);
+  
+          setTransferData({
+            recipientAccountNumber: '',
+            transferAmount: '',
+          });
+        } else {
+          console.error('Recipient account number does not have valid data:', transferData.recipientAccountNumber);
+          setSuccessMessage('Recipient account number does not have valid data.');
+        }
+      } else {
+        console.error('Recipient account number does not exist:', transferData.recipientAccountNumber);
+        setSuccessMessage('Recipient account number does not exist.');
+      }
+    } catch (error) {
+      console.error('Error during transfer:', error);
+    }
+  };
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
 
   const getContentForOption = () => {
     switch (selectedOption) {
@@ -168,20 +238,67 @@ const Dashboard = () => {
 
           </div>
         );
-      case 'balance':
-        return (
-          <div>
-            <h2>Welcome to Balance</h2>
-            {user && <p>User: {user.email}</p>}
-            {loading ? (
-              <p>Loading balance...</p>
-            ) : (
-              <p>Your current balance is: ₱{balance}</p>
-            )}
-          </div>
+        case 'balance':
+          return (
+            <div className="content-container">
+              <div className="current-balance">
+                <h2>
+                  ₱{balance}
+                  <span>Your current balance</span>
+                </h2>
+              </div>
+          
+        </div>
         );
       case 'transfer':
-        return <h2>Welcome to Transfer Funds</h2>;
+        case 'transfer':
+          return (
+            
+            <div className="deposit-container">
+              <div className="logo">
+          <img
+            src="https://iili.io/J1jnv9t.md.png"
+            alt="Bankcraft Logo"
+            width="100"
+            height="100"
+            
+          />
+          <Typography variant="h6" style={{ marginLeft: '10px', fontSize: '35px', fontWeight: 'bold', fontFamily: '"Unbounded", cursive' }}>
+            BANKCRAFT
+          </Typography>
+        </div>
+              {/* Transfer Form */}
+              <form className="deposit-form" onSubmit={handleTransfer}>
+        <h2>Transfer Funds</h2>
+        <label htmlFor="recipientAccountNumber">
+          Recipient Account Number:
+          <input
+            type="text"
+            id="recipientAccountNumber"
+            name="recipientAccountNumber"
+            value={transferData.recipientAccountNumber}
+            onChange={handleTransferInputChange}
+            required
+          />
+        </label>
+
+        <label htmlFor="transferAmount">
+          Transfer Amount:
+          <input
+            type="text"
+            id="transferAmount"
+            name="transferAmount"
+            value={transferData.transferAmount}
+            onChange={handleTransferInputChange}
+            required
+          />
+        </label>
+
+        <button type="submit">Transfer</button>
+      </form>
+      {successMessage && <p className="success-message">{successMessage}</p>}
+    </div>
+  );
       case 'deposit':
         return (
           <div className="deposit-container">
